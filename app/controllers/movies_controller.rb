@@ -9,15 +9,21 @@ class MoviesController < ApplicationController
   def index
     sort = params[:sort]
     @sort = sort
+    session[:sort] = sort
 
     @filter_ratings = []
     @filter_ratings_hash = {}
-    if (params[:ratings])
+    if (params[:ratings] || session[:ratings])
+       if (!params[:ratings])
+         params[:ratings] = session[:ratings]
+       end
+
        params[:ratings].each_key { |keyr| 
          @filter_ratings.push(keyr)
          @filter_ratings_hash[keyr] = keyr 
        }
        @movies = Movie.find(:all, :order=>sort, :conditions => {:rating => @filter_ratings})
+       session[:ratings] = @filter_ratings_hash
     else
        @movies = Movie.all(:order=>sort)
     end
