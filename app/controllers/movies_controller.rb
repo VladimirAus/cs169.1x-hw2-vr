@@ -9,14 +9,16 @@ class MoviesController < ApplicationController
   def index
     sort = params[:sort]
     @sort = sort
-    session[:sort] = sort
+    if (params[:sort])
+      session[:sort] = sort
+    end
 
     @filter_ratings = []
     @filter_ratings_hash = {}
-    if (params[:ratings] || session[:ratings])
-       if (!params[:ratings])
-         params[:ratings] = session[:ratings]
-       end
+    if (params[:ratings])# || session[:ratings])
+       #if (!params[:ratings])
+       #  params[:ratings] = session[:ratings]
+       #end
 
        params[:ratings].each_key { |keyr| 
          @filter_ratings.push(keyr)
@@ -25,6 +27,10 @@ class MoviesController < ApplicationController
        @movies = Movie.find(:all, :order=>sort, :conditions => {:rating => @filter_ratings})
        session[:ratings] = @filter_ratings_hash
     else
+       if (session[:ratings])
+         flash.keep
+         redirect_to movies_path(:sort=>session[:sort], :ratings=>session[:ratings])
+       end
        @movies = Movie.all(:order=>sort)
     end
 
