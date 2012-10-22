@@ -11,8 +11,12 @@ class MoviesController < ApplicationController
     @sort = sort
 
     @filter_ratings = []
+    @filter_ratings_hash = {}
     if (params[:ratings])
-       params[:ratings].each_key { |keyr| @filter_ratings.push(keyr) }
+       params[:ratings].each_key { |keyr| 
+         @filter_ratings.push(keyr)
+         @filter_ratings_hash[keyr] = keyr 
+       }
        @movies = Movie.find(:all, :order=>sort, :conditions => {:rating => @filter_ratings})
     else
        @movies = Movie.all(:order=>sort)
